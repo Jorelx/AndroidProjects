@@ -26,7 +26,7 @@ public class FetchDataTask extends AsyncTask<String, Void, Object> {
     private final String LOG_TAG = FetchDataTask.class.getSimpleName();
     private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/";
     private static final String API_KEY = "api_key";
-    private static final String KEY = "YOU API KEY";
+    private static final String KEY = "ENTER YOUR API KEY HERE";
 
     private final IFetchStrategy mFetchStrategy;
     private final Context mContext;
