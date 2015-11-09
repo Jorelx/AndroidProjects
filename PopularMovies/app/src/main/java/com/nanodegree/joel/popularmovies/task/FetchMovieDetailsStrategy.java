@@ -1,10 +1,12 @@
 package com.nanodegree.joel.popularmovies.task;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
-import com.nanodegree.joel.popularmovies.MovieDetailsFragment;
-import com.nanodegree.joel.popularmovies.movie.MovieDetails;
+import com.nanodegree.joel.popularmovies.data.MovieColumns;
+import com.nanodegree.joel.popularmovies.data.MoviesProvider;
+import com.nanodegree.joel.popularmovies.interfaces.IFetchStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,20 +18,19 @@ public class FetchMovieDetailsStrategy implements IFetchStrategy {
 
     private static final String OWM_TITLE = "title";
     private static final String OWM_RELEASE_DATE = "release_date";
-    private static final String OWM_POSTER_PATH = "poster_path";
-    private static final String OWM_RATE = "vote_average";
     private static final String OWM_SYNOPSIS = "overview";
+    private static final String OWM_RUNTIME = "runtime";
 
-    private final MovieDetailsFragment mRootView;
-    private final String mMovieId;
+    private final Context mContext;
+    private final long mMovieId;
 
-    public FetchMovieDetailsStrategy(MovieDetailsFragment viewFragment, String movieId) {
-        this.mRootView = viewFragment;
+    public FetchMovieDetailsStrategy(Context context, long movieId) {
+        this.mContext = context;
         this.mMovieId = movieId;
     }
 
     @Override
-    public Uri appendParemters(Uri.Builder uriBuilder, String... params) {
+    public Uri appendParameters(Uri.Builder uriBuilder, String... params) {
         return uriBuilder.build();
     }
 
@@ -37,18 +38,24 @@ public class FetchMovieDetailsStrategy implements IFetchStrategy {
     public Object parseJson(String jsonReponse) throws JSONException {
         JSONObject moviesJson = new JSONObject(jsonReponse);
         String title = moviesJson.getString(OWM_TITLE);
-        String releaseDate = moviesJson.getString(OWM_RELEASE_DATE);
-        String averageRate = moviesJson.getString(OWM_RATE);
+        String releaseDate = moviesJson.getString(OWM_RELEASE_DATE).split("-")[0];
         String synopsis = moviesJson.getString(OWM_SYNOPSIS);
-        String posterPath = moviesJson.getString(OWM_POSTER_PATH);
-        return new MovieDetails(title,releaseDate,averageRate,synopsis,posterPath);
-    }
+        String runtime = moviesJson.getString(OWM_RUNTIME) + "min";
+//        JSONArray reviewsJSON = moviesJson.getJSONObject("reviews").getJSONArray("results");
+//        JSONArray videosJSON = moviesJson.getJSONObject("videos").getJSONArray("results");
 
-    @Override
-    public void updateUIComponent(Object result) {
-        MovieDetails details = (MovieDetails)result;
-        MovieDetails.AddToCache(mMovieId, details);
-        mRootView.UpdateDetailsView(details);
+        ContentValues values = new ContentValues();
+        values.put(MovieColumns.TITLE, title);
+        values.put(MovieColumns.RELEASE_DATE, releaseDate);
+        values.put(MovieColumns.SYNOPSIS, synopsis);
+        values.put(MovieColumns.RUNTIME, runtime);
+        mContext.getContentResolver().update(
+                MoviesProvider.Movies.withId(mMovieId),
+                values,
+                null,
+                null);
+
+        return null;
     }
 
     @Override
@@ -57,7 +64,12 @@ public class FetchMovieDetailsStrategy implements IFetchStrategy {
     }
 
     @Override
-    public String getCompletationMessage(Context context) {
-        return null; //Nothing to display
+    public String getCompletationMessage() {
+        return "Movie Details Loaded."; //Nothing to display
+    }
+
+    @Override
+    public Context getContext() {
+        return mContext;
     }
 }

@@ -1,19 +1,24 @@
 package com.nanodegree.joel.popularmovies.task;
 
+import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.nanodegree.joel.popularmovies.R;
-import com.nanodegree.joel.popularmovies.movie.Movie;
+import com.nanodegree.joel.popularmovies.data.MovieColumns;
+import com.nanodegree.joel.popularmovies.data.MoviesProvider;
+import com.nanodegree.joel.popularmovies.interfaces.IFetchStrategy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by joel on 9/16/15.
@@ -25,22 +30,23 @@ public class FetchMoviesStrategy implements IFetchStrategy {
     private static final String OWM_RESULTS = "results";
     private static final String OWM_ID = "id";
     private static final String OWM_POSTER_PATH = "poster_path";
-
-    private final ArrayAdapter<Movie> mAdapter;
+    private static final String OWM_POPULARITY = "popularity";
+    private static final String OWM_RATE = "vote_average";
     private String mSortByOption;
+    private final Context mContext;
 
-    public FetchMoviesStrategy(ArrayAdapter<Movie> adapter) {
-        this.mAdapter = adapter;
+    public FetchMoviesStrategy(Context context) {
+        mContext = context;
     }
 
     @Override
-    public Uri appendParemters(Uri.Builder uriBuilder, String... params) {
-        if (params.length < 2) {
+    public Uri appendParameters(Uri.Builder uriBuilder, String... params) {
+        if (params.length < 1) {
             Log.e(LOG_TAG, "Invalid number of arguments");
             return null;
         }
 
-        String pageNumber = params[1];
+        String pageNumber = "1";
         mSortByOption = params[0];
         return uriBuilder.appendQueryParameter(SORT_BY, mSortByOption)
                 .appendQueryParameter(PAGE, pageNumber)
@@ -49,33 +55,67 @@ public class FetchMoviesStrategy implements IFetchStrategy {
 
     @Override
     public Object parseJson(String moviesJsonResult) throws JSONException {
-        List<Movie> moviesList = new ArrayList<>();
         JSONObject moviesJson = new JSONObject(moviesJsonResult);
         JSONArray results = moviesJson.getJSONArray(OWM_RESULTS);
+        ArrayList<ContentValues> moviesContentValues = new ArrayList<>();
+        ArrayList<ContentProviderOperation> updates = new ArrayList<>();
+        Set<Long> st = getFavoriteMoviesId();
+        long id;
+        String posterPath;
+        double averageRate;
+        double popularity;
+        JSONObject movieJson;
 
         for (int i = 0; i < results.length(); i++) {
-            long id;
-            String posterImage;
-            JSONObject movieJson = results.getJSONObject(i);
+            movieJson = results.getJSONObject(i);
             id = movieJson.getLong(OWM_ID);
-            posterImage = movieJson.getString(OWM_POSTER_PATH);
-            moviesList.add(new Movie(id, posterImage));
+            posterPath = movieJson.getString(OWM_POSTER_PATH);
+            averageRate = movieJson.getDouble(OWM_RATE);
+            popularity = movieJson.getDouble(OWM_POPULARITY);
+
+            ContentValues values = new ContentValues();
+            values.put(MovieColumns.POSTER_PATH, posterPath);
+            values.put(MovieColumns.POPULARITY, popularity);
+            values.put(MovieColumns.AVERAGE_RATE, averageRate);
+
+            if (st.contains(id)) {
+                getContext().
+                        getContentResolver().
+                        update(MoviesProvider.Movies.CONTENT_URI,
+                                values,
+                                MovieColumns._ID + "=" + id,
+                                null);
+            } else {
+                values.put(MovieColumns._ID, id);
+                moviesContentValues.add(values);
+            }
         }
-        return moviesList;
+
+        saveOnDatabase(moviesContentValues, updates);
+        return null;
     }
 
-    @Override
-    public void updateUIComponent(Object result) {
-        if (result == null) {
-            return;
-        }
-        List<Movie> moviesList = (List<Movie>)result;
-        if (moviesList == null) {
-            return;
-        }
-        this.mAdapter.clear();
-        mAdapter.addAll(moviesList);
+    private void saveOnDatabase(ArrayList<ContentValues> moviesContentValues, ArrayList<ContentProviderOperation> updates) {
+        mContext.getContentResolver().delete(MoviesProvider.Movies.CONTENT_URI, MovieColumns.IS_FAVORITE + " <> 1 ", null);
 
+        Log.i(LOG_TAG, "Saving movie data in DB");
+        ContentValues[] valuesArray = new ContentValues[moviesContentValues.size()];
+        moviesContentValues.toArray(valuesArray);
+        mContext.getContentResolver().bulkInsert(MoviesProvider.Movies.CONTENT_URI, valuesArray);
+
+    }
+
+    private Set<Long> getFavoriteMoviesId() {
+        Set<Long> idsSet = new HashSet<>();
+        Cursor moviesId = mContext.getContentResolver().query(
+                MoviesProvider.Movies.CONTENT_URI,
+                new String[]{ MovieColumns._ID},
+                MovieColumns.IS_FAVORITE + " = 1 ", null, null);
+
+        while(moviesId.moveToNext()) {
+            idsSet.add(moviesId.getLong(0));
+        }
+        return idsSet;
     }
 
     @Override
@@ -84,19 +124,24 @@ public class FetchMoviesStrategy implements IFetchStrategy {
     }
 
     @Override
-    public String getCompletationMessage(Context context) {
-        String sortByPop = context.getString(R.string.prefs_sort_by_popularity);
-        String sortByRate = context.getString(R.string.prefs_sort_by_rate);
+    public String getCompletationMessage() {
+        final String sortByPop = mContext.getString(R.string.prefs_sort_by_popularity);
+        final String sortByRate = mContext.getString(R.string.prefs_sort_by_rate);
 
         if (sortByPop.equals(mSortByOption)) {
-            return context.getString(R.string.prefs_sort_by_label_popularity);
+            return mContext.getString(R.string.prefs_sort_by_label_popularity);
         }
 
         if (sortByRate.equals(mSortByOption)) {
-            return context.getString(R.string.prefs_sort_by_label_rate);
+            return mContext.getString(R.string.prefs_sort_by_label_rate);
         }
 
-        return null;
+        return mContext.getString(R.string.prefs_sort_by_label_favorite);
+    }
+
+    @Override
+    public Context getContext() {
+        return mContext;
     }
 
 }

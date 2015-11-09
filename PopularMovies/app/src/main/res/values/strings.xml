@@ -3,18 +3,38 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_movie_details">Movie Details</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="action_share">Share</string>
 
 
     <string name="prefs_sort_by_label_popularity">Most Popular</string>
     <string name="prefs_sort_by_label_rate">Highest Rated</string>
+    <string name="prefs_sort_by_label_favorite">Favorite</string>
+
 
     <string name="prefs_sort_by_popularity" translatable="false">popularity.desc</string>
     <string name="prefs_sort_by_rate" translatable="false">vote_average.desc</string>
+    <string name="prefs_sort_by_favorite" translatable="false">favorite</string>
 
     <string name="pref_sort_by_key" translatable="false">sortby</string>
     <string name="pref_sort_by_title">Sort movies by</string>
+
     <string name="dialog_sort_by_title">Sort Options</string>
 
     <string name="wait_message">Please Wait...</string>
+
+    <string name="button_mark_as_favorite">Mark as Favorite</string>
+
+    <string name="tab_label_my_favorite_movies">My Favorite</string>
+    <string name="tab_label_top_movies">Top movies</string>
+
+    <string name="title_trailers">Trailers:</string>
+    <string name="title_reviews">Reviews:</string>
+
+    <string name="empty_trailers_list">There is no trailers for this movie</string>
+    <string name="empty_reviews_list">There is no reviews for this movie</string>
+    <string name="message_please_select_a_movie">Please select a movie</string>
+    <string name="message_no_internet">Network error: Popular movies cannot retrieve the list without Internet connection.</string>
+
+
 
 </resources>

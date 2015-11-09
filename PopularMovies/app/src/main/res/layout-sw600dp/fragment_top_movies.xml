@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.nanodegree.joel.popularmovies.fragment.TopMoviesFragment">
+    <GridView android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:numColumns="3"
+        android:gravity="center"
+        android:stretchMode="columnWidth"
+        tools:context=".MainActivityFragment" android:id="@+id/top_movies_view">
+    </GridView>
+</FrameLayout>

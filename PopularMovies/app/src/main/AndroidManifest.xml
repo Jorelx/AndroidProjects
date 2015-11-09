@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nanodegree.joel.popularmovies" >
+    package="com.nanodegree.joel.popularmovies" android:largeHeap="true" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme" android:largeHeap="true" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" android:largeHeap="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +22,7 @@
         <activity
             android:name=".MovieDetailsActivity"
             android:label="@string/title_activity_movie_details"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity" android:largeHeap="true" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nanodegree.joel.popularmovies.MainActivity" />
@@ -34,6 +35,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nanodegree.joel.popularmovies.MainActivity" />
         </activity>
+        <provider
+            android:authorities="com.nanodegree.joel.popularmovies.data.MoviesProvider"
+            android:name="com.nanodegree.joel.popularmovies.data.provider.MoviesProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

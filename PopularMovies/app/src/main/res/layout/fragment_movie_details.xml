@@ -1,46 +1,60 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    tools:context="com.nanodegree.joel.popularmovies.MovieDetailsFragment">
-    <LinearLayout
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        style="@style/MovieTitleStyle"
+        android:id="@+id/movie_title_view"
         android:layout_width="match_parent"
+        android:minHeight="@dimen/movie_title_min_height"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:isScrollContainer="true">
-        <TextView
-            style="@style/MovieTitleStyle"
-            android:id="@+id/movie_title"
-            android:layout_width="match_parent"
-            android:minHeight="@dimen/movie_title_min_height"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:background="#ff009688"/>
-        <TableLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TableRow android:layout_height="match_parent" android:layout_width="match_parent" >
-                <ImageView android:layout_width="wrap_content"
-                    android:layout_weight="2"
-                    android:id="@+id/movie_poster"
-                    android:padding="@dimen/movie_poster_padding"/>
-                <TableLayout android:layout_weight="8"
-                    android:padding="@dimen/movie_details_padding">
-                    <TableRow>
-                        <TextView android:id="@+id/movie_release_Date"
-                            android:padding="@dimen/movie_details_padding"
-                            android:layout_width="wrap_content" />
-                    </TableRow>
-                    <TableRow>
-                        <TextView android:id="@+id/movie_vote_average"
-                            android:padding="@dimen/movie_details_padding"
-                            android:layout_width="wrap_content" />
-                    </TableRow>
-                </TableLayout>
-            </TableRow>
-        </TableLayout>
-        <TextView android:id="@+id/movie_plot_synopsis"
-            android:padding="@dimen/movie_details_padding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-</ScrollView>
+        android:gravity="center"
+        android:background="#ff009688"/>
+    <TableLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow android:layout_height="match_parent" android:layout_width="match_parent" >
+            <ImageView android:layout_width="fill_parent"
+                android:layout_weight="2"
+                android:id="@+id/movie_poster_view"
+                android:padding="@dimen/movie_poster_padding"/>
+            <TableLayout android:layout_weight="2"
+                android:paddingLeft="@dimen/movie_details_padding" android:paddingBottom="5dip">
+                <TableRow>
+                    <TextView android:id="@+id/movie_release_date_view"
+                        android:padding="5dip"
+                        android:layout_width="wrap_content"
+                        android:textAppearance="?android:textAppearanceLarge"/>
+                </TableRow>
+                <TableRow>
+                    <TextView android:id="@+id/movie_runtime_view"
+                        android:padding="5dip"
+                        android:layout_width="wrap_content"
+                        android:textAppearance="?android:textAppearanceMedium"/>
+                </TableRow>
+                <TableRow>
+                    <TextView android:id="@+id/movie_vote_average_view"
+                        android:padding="5dip"
+                        android:layout_width="wrap_content"
+                        android:textAppearance="?android:textAppearanceSmall"/>
+                </TableRow>
+                <TableRow>
+                    <Button
+                        android:id="@+id/button_mark_favorite"
+                        android:text="@string/button_mark_as_favorite"
+                        android:textStyle="italic"
+                        />
+                    <ImageView
+                        android:id="@+id/view_favorite_icon"
+                        android:src="@android:drawable/star_big_on"
+                        android:visibility="gone"
+                        />
+                </TableRow>
+            </TableLayout>
+        </TableRow>
+    </TableLayout>
+    <TextView android:id="@+id/movie_plot_synopsis_view"
+        android:padding="@dimen/movie_details_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

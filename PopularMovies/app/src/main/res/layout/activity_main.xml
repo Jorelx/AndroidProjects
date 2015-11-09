@@ -1,5 +1,9 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
-    android:name="com.nanodegree.joel.popularmovies.MainActivityFragment"
-    tools:layout="@layout/fragment_movies_grid" android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_top_movies"
+    android:name="com.nanodegree.joel.popularmovies.fragment.TopMoviesFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.nanodegree.joel.popularmovies.fragment.TopMoviesFragment"
+    tools:layout="@android:layout/list_content" />
+
